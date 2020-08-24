@@ -12,7 +12,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @MapperScan("com.example.music.**.mapper")
 @EnableEurekaClient
 @ComponentScans(value = {
-        @ComponentScan(basePackages = {"com.example.music"}),
+        @ComponentScan(basePackages = {"com.example"}),
 })
 public class AuthServiceApplication {
 

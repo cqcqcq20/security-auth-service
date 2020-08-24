@@ -4,6 +4,7 @@ import com.example.music.auth.basic.config.UnAuthenticationEntryPoint;
 import com.example.music.auth.basic.config.handler.AuthAccessDeniedHandler;
 import com.example.music.auth.config.granter.SMSCodeTokenGranter;
 import com.example.music.auth.config.provider.SmsCodeAuthenticationProvider;
+import com.example.music.auth.mapper.UserMapper;
 import com.example.music.auth.service.CustomUserDetailsService;
 import com.example.music.auth.service.RedisTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -52,6 +52,9 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     private JdbcTokenStore jdbcTokenStore;
 
     @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
     private RedisTokenService redisTokenService;
 
     @Autowired
@@ -69,6 +72,7 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
                 .tokenEnhancer(enhancerChain)
                 .userDetailsService(customUserDetailsService)
                 .exceptionTranslator(customWebResponseExceptionTranslator)
+                .accessTokenConverter(new UserInfoAccessTokenConverter(userMapper))
                 .pathMapping("/oauth/token","/oauth/login");
     }
 
@@ -76,6 +80,7 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     public TokenEnhancer provideTokenEnhancer() {
         return new AuthTokenEnhancer();
     }
+
 
     private TokenGranter tokenGranter(AuthorizationServerEndpointsConfigurer endpoints) {
         SMSCodeTokenGranter smsCodeTokenGranter = new SMSCodeTokenGranter(endpoints.getTokenServices(), endpoints.getClientDetailsService(), endpoints.getOAuth2RequestFactory(), authenticationManager);

@@ -15,6 +15,9 @@ public interface UserMapper extends BaseMapper<DBUserEntity> {
     @Select("select * from user where phone = #{phone} and area = #{area}")
     DBUserEntity findByPhone(String phone,String area);
 
+    @Select("select * from user where id = #{uid}")
+    DBUserEntity findByUid(String uid);
+
     @Select("select * from user where id = #{id} or phone = #{phone}")
     DBUserEntity findByPhoneOrId(String phone,String id);
 
